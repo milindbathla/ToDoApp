@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A clean, simple, and intuitive To-Do application built with Node.js and Express">
+  <title>Minimalist To-Do</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-background">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
+
+  <main class="app-container">
+    <!-- Header Section -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="app-title">
+          <span class="icon-check-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+          Daily Tasks
+        </h1>
+        <p class="current-date" id="current-date">Today</p>
+      </div>
+      <div class="header-right">
+        <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme" title="Toggle dark/light mode">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Progress Overview (Clickable to open Statistics) -->
+    <section class="progress-section interactive" id="progress-card" role="button" tabindex="0" aria-label="View task statistics and velocity" title="Click to view detailed statistics dashboard">
+      <div class="progress-info">
+        <span class="progress-text" id="progress-text">0 of 0 tasks completed</span>
+        <div class="progress-action-group">
+          <span class="progress-percent" id="progress-percent">0%</span>
+          <span class="view-stats-badge">
+            <span>Statistics</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+    </section>
+
+    <!-- Main Tasks View Panel -->
+    <div id="tasks-view" class="view-panel active">
+      <!-- Task Input Form -->
+      <form id="todo-form" class="todo-form" autocomplete="off">
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="todo-input" 
+            name="title"
+            class="todo-input" 
+            placeholder="What do you need to do?" 
+            maxlength="200" 
+            required 
+            aria-label="New task title"
+          >
+          <button type="submit" id="add-btn" class="btn-primary" aria-label="Add task">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Task Filter Tabs -->
+      <nav class="filter-nav" aria-label="Task filters">
+        <div class="filter-pills" role="tablist">
+          <button type="button" class="filter-btn active" data-filter="all" role="tab" aria-selected="true" id="tab-all">
+            All <span class="badge" id="count-all">0</span>
+          </button>
+          <button type="button" class="filter-btn" data-filter="active" role="tab" aria-selected="false" id="tab-active">
+            Active <span class="badge" id="count-active">0</span>
+          </button>
+          <button type="button" class="filter-btn" data-filter="completed" role="tab" aria-selected="false" id="tab-completed">
+            Completed <span class="badge" id="count-completed">0</span>
+          </button>
+        </div>
+        <button type="button" id="clear-completed-btn" class="btn-link" title="Clear all completed tasks">
+          Clear completed
+        </button>
+      </nav>
+
+      <!-- Task List -->
+      <section class="task-list-section">
+        <ul id="todo-list" class="todo-list" role="list">
+          <!-- Rendered via JavaScript -->
+        </ul>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" hidden>
+          <div class="empty-icon-wrapper">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+          </div>
+          <h2 class="empty-title">All caught up!</h2>
+          <p class="empty-description">You have no tasks in this view. Enjoy your day or add a new one.</p>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <span>Press <kbd>Enter</kbd> to add a task</span>
+        <span>•</span>
+        <span id="sync-status">All changes saved</span>
+      </footer>
+    </div>
+
+    <!-- Statistics & Velocity Dashboard View Panel -->
+    <section id="stats-view" class="view-panel stats-dashboard" hidden aria-label="Task statistics and velocity dashboard">
+      <!-- Back Navigation Header -->
+      <div class="stats-header">
+        <button type="button" id="back-to-tasks-btn" class="btn-back" aria-label="Back to task list">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Back to Tasks</span>
+        </button>
+        <div class="stats-header-badge">
+          <span class="live-pulse"></span>
+          <span>Live Velocity</span>
+        </div>
+      </div>
+
+      <!-- Key Metrics Cards Grid -->
+      <div class="stats-grid">
+        <!-- Today's Activity Card -->
+        <div class="stat-card stat-card-featured">
+          <div class="stat-card-top">
+            <span class="stat-card-title">Today's Focus</span>
+            <span class="stat-badge stat-badge-indigo">Today</span>
+          </div>
+          <div class="stat-split-row">
+            <div class="stat-split-col">
+              <span class="stat-big-val" id="stat-created-today">0</span>
+              <span class="stat-label">Created</span>
+            </div>
+            <div class="stat-divider">/</div>
+            <div class="stat-split-col">
+              <span class="stat-big-val text-success" id="stat-completed-today">0</span>
+              <span class="stat-label">Completed</span>
+            </div>
+          </div>
+          <div class="stat-footer-text" id="stat-today-ratio">0 finished today</div>
+        </div>
+
+        <!-- Active Workload Card -->
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-card-title">Active Tasks</span>
+            <div class="stat-icon-wrapper active-icon-bg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 14 14"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-metric-row">
+            <span class="stat-big-val" id="stat-active-count">0</span>
+            <span class="stat-unit">pending</span>
+          </div>
+          <div class="stat-footer-text" id="stat-active-desc">Current active workload</div>
+        </div>
+
+        <!-- Total Completed Card -->
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-card-title">All-Time Done</span>
+            <div class="stat-icon-wrapper success-icon-bg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-metric-row">
+            <span class="stat-big-val text-success" id="stat-total-completed">0</span>
+            <span class="stat-badge stat-badge-success" id="stat-completion-rate">0%</span>
+          </div>
+          <div class="stat-footer-text" id="stat-total-tracked">Across all recorded tasks</div>
+        </div>
+
+        <!-- 7-Day Velocity Card -->
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-card-title">Daily Velocity</span>
+            <div class="stat-icon-wrapper velocity-icon-bg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                <polyline points="16 7 22 7 22 13"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-metric-row">
+            <span class="stat-big-val" id="stat-avg-velocity">0.0</span>
+            <span class="stat-unit">tasks / day</span>
+          </div>
+          <div class="stat-footer-text" id="stat-velocity-total">7-day average pace</div>
+        </div>
+      </div>
+
+      <!-- 7-Day Velocity Interactive Bar Chart Card -->
+      <div class="velocity-chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">7-Day Task Velocity</h3>
+            <p class="chart-subtitle">Tasks created vs completed each day</p>
+          </div>
+          <div class="chart-header-actions">
+            <div class="chart-legend">
+              <div class="legend-pill">
+                <span class="legend-swatch swatch-created"></span>
+                <span>Created</span>
+              </div>
+              <div class="legend-pill">
+                <span class="legend-swatch swatch-completed"></span>
+                <span>Completed</span>
+              </div>
+            </div>
+            <button type="button" id="reset-activity-btn" class="btn-reset-activity" title="Reset activity and velocity history" aria-label="Reset activity and velocity history">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+              </svg>
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bar chart rendered dynamically -->
+        <div class="chart-bars-container" id="velocity-chart-bars" role="region" aria-label="7-day activity chart">
+          <!-- Filled by app.js -->
+        </div>
+
+        <div class="chart-insight-box">
+          <div class="insight-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div class="insight-content">
+            <span class="insight-title" id="chart-insight-title">Velocity Insight</span>
+            <span class="insight-desc" id="chart-insight-text">Analyzing your 7-day productivity pattern...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
