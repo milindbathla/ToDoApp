@@ -42,3 +42,83 @@ ToDoApp/
 ├── server.js
 ├── vercel.json
 └── .gitignore
+```
+
+## 🚀 Run Locally
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/milindbathla/ToDoApp.git
+cd ToDoApp
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the application
+
+```bash
+npm start
+```
+
+If the project does not define a `start` script, run:
+
+```bash
+node server.js
+```
+
+### 4. Open the application
+
+Visit:
+
+```text
+http://localhost:3000
+```
+
+The exact local port may depend on the configuration in `server.js`.
+
+## 📊 Productivity Dashboard
+
+The application provides a productivity-focused dashboard showing:
+
+- Tasks created today
+- Tasks completed today
+- Current active workload
+- All-time completed tasks
+- Daily task velocity
+- Seven-day task creation and completion trends
+
+This allows the application to function as more than a basic checklist by providing a quick view of daily productivity.
+
+## 🌐 Live Application
+
+Try the application here:
+
+[**Open ToDoApp**](https://todo-app-eta-three-47.vercel.app/)
+
+## 🔮 Future Improvements
+
+Potential future improvements include:
+
+- User authentication
+- Multiple task lists/projects
+- Categories and tags
+- Task priorities
+- Due dates and reminders
+- Cloud database integration
+- Cross-device synchronization
+- Dark/light theme customization
+
+## 👨‍💻 Author
+
+**Milind Bathla**
+
+GitHub: [@milindbathla](https://github.com/milindbathla)
+
+---
+
+⭐ If you find this project useful, consider giving the repository a star.
